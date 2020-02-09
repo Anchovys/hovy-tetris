@@ -1,11 +1,15 @@
-﻿namespace Tetris
+﻿using System;
+
+namespace Tetris
 {
     class Teewee : IFigure
     {
-        readonly string[] data = {
+        string[] data = {
             " # ",
             "###"
         };
+
+        int rotateLength = 0;
 
         private Point position = new Point(0, 0);
 
@@ -23,11 +27,28 @@
             }
         }
 
+       
         public string[] Data
         {
             get
             {
                 return data;
+            }
+            set
+            {
+                data = value;
+            }
+        }
+
+        public int RotateLength
+        {
+            get
+            {
+                return rotateLength;
+            }
+            set
+            {
+                rotateLength = value;
             }
         }
 
@@ -35,24 +56,21 @@
 
         public void FallDown()
         {
-            position.Y++;
+            Position.Y++;
         }
         public void MoveLeft()
         {
-            var pos = new Point(Position.X - 1, Position.Y - 1);
+            Position.X--;
+        }
 
-            if (pos.X < 0)
-                return;
-
-            position.X--;
+        public void Rotate()
+        {
+            rotateLength++;
         }
 
         public void MoveRight()
         {
-            if (Position.X + Data[0].Length > 10)
-                return;
-
-            position.X++;
+            Position.X++;
         }
     }
 }

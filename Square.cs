@@ -1,21 +1,20 @@
 namespace TetrisBool
 {
-    public class Teewee : IFigure
+    public class Square : IFigure
     {
         private Point _point;
         private int rotation;
         private bool[,] _data = new bool[,]
         {
-            {false, true},
             {true, true},
-            {false, true},
+            {true, true}
         };
-        
-        public Teewee(Point point)
+
+        public Square(Point point)
         {
             _point = point;
         }
-
+        
         #region Fields
 
         public bool[,] Data
@@ -37,6 +36,5 @@ namespace TetrisBool
         }
 
         #endregion
-        
     }
 }

@@ -4,5 +4,6 @@ namespace TetrisBool
     {
         public bool[,] Data { get; set; }
         public Point Position { get; set; }
+        public int Rotate { get; set; }
     }
 }

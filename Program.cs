@@ -5,7 +5,7 @@ namespace TetrisBool
     public class Program
     {
         static GameField _field = new GameField();
-        private static IFigure _figure = new Teewee(new Point(4, 0));
+        private static IFigure _figure = new Square(new Point(4, 0));
         
         static void Main()
         {
@@ -24,17 +24,23 @@ namespace TetrisBool
                 {
                     Console.WriteLine("Fine");
 
+                    int fillId = _field.FindFullLine();
+                    if (fillId != -1)
+                    {
+                        _field.DeleteLine(fillId);
+                    }
+
                     var _pos = new Point(_figure.Position.X, _figure.Position.Y);
                     _pos.Y++; // смещение фигуры влево
                         
-                    if (_figure.Position.Y >= 15 || !_field.CheckCollision(_figure, _pos))
+                    if (_field.CheckLimits(_figure, _pos) && _field.CheckCollision(_figure, _pos))
                     {
-                        _field.PlaceFigure(_figure);
-                        _figure = new Teewee(new Point(4, 0));
+                        _figure.Position = _pos;
                     }
                     else
                     {
-                        _figure.Position = _pos;    
+                        _field.PlaceFigure(_figure);
+                        _figure = new Square(new Point(4, 0));
                     }
 
                     currentTick = 0; // сброс таймера

@@ -1,76 +1,29 @@
-﻿using System;
-
-namespace Tetris
+namespace TetrisBool
 {
-    class Teewee : IFigure
+    public class Teewee : IFigure
     {
-        string[] data = {
-            " # ",
-            "###"
+        private Point _point;
+        private bool[,] _data = new bool[,]
+        {
+            {true, true},
+            {true, true},
         };
 
-        int rotateLength = 0;
-
-        private Point position = new Point(0, 0);
-
-        #region fields
-
-        public Point Position
+        public Teewee(Point point)
         {
-            get
-            {
-                return position;
-            }
-            set
-            {
-                position = value;
-            }
+            _point = point;
         }
-
-       
-        public string[] Data
+        
+        public bool[,] Data
         {
-            get
-            {
-                return data;
-            }
-            set
-            {
-                data = value;
-            }
+            get => _data;
+            set => _data = value;
         }
-
-        public int RotateLength
+        
+        public Point Position 
         {
-            get
-            {
-                return rotateLength;
-            }
-            set
-            {
-                rotateLength = value;
-            }
-        }
-
-        #endregion
-
-        public void FallDown()
-        {
-            Position.Y++;
-        }
-        public void MoveLeft()
-        {
-            Position.X--;
-        }
-
-        public void Rotate()
-        {
-            rotateLength++;
-        }
-
-        public void MoveRight()
-        {
-            Position.X++;
+            get => _point;
+            set => _point = value;
         }
     }
 }

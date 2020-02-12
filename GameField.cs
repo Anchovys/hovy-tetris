@@ -21,7 +21,7 @@ namespace Tetris
             for (int i = 0; i < Sizes.Y + 2; i++)
             {
                 Console.SetCursorPosition(0,i);
-                Console.Write(new string(' ', bufferWidth));
+                Console.Write(new string('.', bufferWidth));
             }
 
             GlobalOffsetX = bufferWidth / 2 - (Sizes.X / 2);
@@ -160,7 +160,7 @@ namespace Tetris
                 for (int y = 0; y < Sizes.Y; y++)
                 {
                     Console.SetCursorPosition(GlobalOffsetX, y);
-                    Console.WriteLine(new string('.', Sizes.X));
+                    Console.WriteLine(new string(' ', Sizes.X));
                 }
             }
             
@@ -298,14 +298,20 @@ namespace Tetris
         /// <param name="figure">Обьект фигуры</param>
         public void DrawFigure(IFigure figure)
         {
-            var pos = new Point(figure.Position.X + GlobalOffsetX, figure.Position.Y);
+            var pos = new Point(figure.Position.X, figure.Position.Y);
 
             for (int i = 0; i < figure.Data.Length; i++)
             {
-                Console.SetCursorPosition(pos.X, pos.Y + i);
                 for (int j = 0; j < figure.Data[0].Length; j++)
                 {
-                    Console.Write(figure.Data[i][j]);
+                    // сдвиг курсора (внимание: сдвиг вправо -> GlobalOffsetX)
+                    Console.SetCursorPosition(pos.X + j + GlobalOffsetX, pos.Y + i);
+                    
+                    // проверка на то, что пустота в фигуре ничего не перекрывает на карте
+                    if (figure.Data[i][j] != ' ' && _lines[pos.Y + i][pos.X + j] == ' ')
+                    {
+                        Console.Write(figure.Data[i][j]); // отрисовываем в нужном месте
+                    }
                 }
             }
         }

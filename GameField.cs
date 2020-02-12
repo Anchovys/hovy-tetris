@@ -4,26 +4,26 @@ namespace Tetris
 {
     class GameField
     {
-        private readonly Point _sizes = new Point(10, 20);
+        public readonly Point Sizes = new Point(10, 20);
         private readonly char[][] _lines = new char[20][];
-        private readonly int _globalOffsetX = 20;
+        public readonly int GlobalOffsetX = 20;
 
         public GameField(int bufferWidth, Point customSizes = null)
         {
             if (customSizes != null)
             {
-                _sizes = customSizes;
-                _lines = new char[_sizes.Y][];
+                Sizes = customSizes;
+                _lines = new char[Sizes.Y][];
             }
 
             FillField(' ');
             
-            for (int i = 0; i < _sizes.Y + 2; i++)
+            for (int i = 0; i < Sizes.Y + 2; i++)
             {
                 Console.WriteLine(new string('.', bufferWidth));
             }
 
-            _globalOffsetX = bufferWidth / 2 - (_sizes.X / 2);
+            GlobalOffsetX = bufferWidth / 2 - (Sizes.X / 2);
 
         }
 
@@ -32,9 +32,9 @@ namespace Tetris
         /// </summary>
         public void FillField(char symbol = ' ') 
         {
-            for (int i = 0; i < _sizes.Y; i++)
+            for (int i = 0; i < Sizes.Y; i++)
             {
-                _lines[i] = new string(symbol, _sizes.X).ToCharArray();
+                _lines[i] = new string(symbol, Sizes.X).ToCharArray();
             }
         }
 
@@ -46,8 +46,8 @@ namespace Tetris
         {
             var pos = customPoint == null ? new Point(figure.Position.X, figure.Position.Y) : new Point(customPoint.X, customPoint.Y);
 
-            return pos.X >= 0 && pos.X + figure.Data[0].Length <= _sizes.X &&
-                   pos.Y >= 0 && pos.Y + figure.Data.Length <= _sizes.Y;
+            return pos.X >= 0 && pos.X + figure.Data[0].Length <= Sizes.X &&
+                   pos.Y >= 0 && pos.Y + figure.Data.Length <= Sizes.Y;
         }
         
         /// <summary>
@@ -60,8 +60,8 @@ namespace Tetris
         {
             var pos = new Point(point.X, point.Y);
 
-            return pos.X >= 0 && pos.X + data[0].Length <= _sizes.X &&
-                   pos.Y >= 0 && pos.Y + data.Length <= _sizes.Y;
+            return pos.X >= 0 && pos.X + data[0].Length <= Sizes.X &&
+                   pos.Y >= 0 && pos.Y + data.Length <= Sizes.Y;
         }
 
         /// <summary>
@@ -156,16 +156,16 @@ namespace Tetris
         {
             if (clear)
             {
-                for (int y = 0; y < _sizes.Y; y++)
+                for (int y = 0; y < Sizes.Y; y++)
                 {
-                    Console.SetCursorPosition(_globalOffsetX, y);
-                    Console.WriteLine(new string('+', _sizes.X));
+                    Console.SetCursorPosition(GlobalOffsetX, y);
+                    Console.WriteLine(new string('+', Sizes.X));
                 }
             }
             
-            for (int y = 0; y < _sizes.Y; y++)
+            for (int y = 0; y < Sizes.Y; y++)
             {
-                Console.SetCursorPosition(_globalOffsetX, y);
+                Console.SetCursorPosition(GlobalOffsetX, y);
                 Console.WriteLine(_lines[y]);
             }
         }
@@ -245,7 +245,7 @@ namespace Tetris
                 _lines[i] = t[i-1];
             }
 
-            _lines[0] = new string(' ', _sizes.X).ToCharArray();
+            _lines[0] = new string(' ', Sizes.X).ToCharArray();
             
         }
 
@@ -285,7 +285,7 @@ namespace Tetris
 
         public void DrawFigure(IFigure figure)
         {
-            var pos = new Point(figure.Position.X + _globalOffsetX, figure.Position.Y);
+            var pos = new Point(figure.Position.X + GlobalOffsetX, figure.Position.Y);
 
             for (int i = 0; i < figure.Data.Length; i++)
             {

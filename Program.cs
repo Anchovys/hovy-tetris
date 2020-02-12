@@ -6,7 +6,10 @@ namespace Tetris
     public class Program
     {
         private static GameField _field = new GameField(Console.BufferWidth);
+        
         private static IFigure _figure = TakeRandom();
+        private static IFigure _nextFigure = TakeRandom();
+        
         private static int Lines;
         private static int Speed; 
         
@@ -20,6 +23,8 @@ namespace Tetris
             int renderTick = 10;
             // частота обработки управления
             int controlTick = renderTick / 5;
+
+            DrawNext();
             
             do
             {
@@ -61,7 +66,11 @@ namespace Tetris
                     else
                     {
                         _field.PlaceFigure(_figure);
-                        _figure = TakeRandom();
+                        _figure = _nextFigure;
+                        _nextFigure = TakeRandom();
+                        
+                        DrawNext();
+                        
                     }
 
                     // отрисовка статистики и т.д
@@ -158,6 +167,34 @@ namespace Tetris
             Console.WriteLine(".Game Design by");
             Console.SetCursorPosition(7, 16);
             Console.WriteLine("Alexey Pajitnov");
+        }
+
+        static void DrawNext()
+        {
+
+            
+            int offsetX = 6;
+            int offsetY = 3;
+            
+            for (int y = 0; y < 6; y++)
+            {
+                Console.SetCursorPosition(_field.GlobalOffsetX + _field.Sizes.X + 2, 5 + y);
+                for (int x = 0; x < 12; x++)
+                {
+                    int xpos = x - offsetX;
+                    int ypos = y - offsetY;
+                    
+                    if (xpos < _nextFigure.Data[0].Length && xpos >= 0 && 
+                        ypos < _nextFigure.Data.Length && ypos >= 0)
+                    {
+                        Console.Write(_nextFigure.Data[ypos][xpos]);
+                    }
+                    else
+                    {
+                        Console.Write(' ');
+                    }
+                }
+            }
         }
     }
 }

@@ -8,7 +8,11 @@
       <e p="bin" t="ExcludeRecursive" />
       <e p="Figure.cs" t="Include" />
       <e p="figures" t="Include">
+        <e p="BlueRicky.cs" t="Include" />
         <e p="Hero.cs" t="Include" />
+        <e p="OrangeRicky.cs" t="Include" />
+        <e p="PhodeIslandLeft.cs" t="Include" />
+        <e p="PhodeIslandRight.cs" t="Include" />
         <e p="Square.cs" t="Include" />
         <e p="Teewee.cs" t="Include" />
       </e>

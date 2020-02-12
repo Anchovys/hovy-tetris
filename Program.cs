@@ -30,6 +30,12 @@ namespace Tetris
                         Lines++;
                     }
 
+                    if (_field.CheckContainsLine(0, '#'))
+                    {
+                        _field.FillField(' ');
+                        Lines = 0;
+                    }
+
                     var _pos = new Point(_figure.Position.X, _figure.Position.Y);
                     _pos.Y++; // смещение фигуры вниз
                         
@@ -101,9 +107,13 @@ namespace Tetris
             var random = new Random();
             var figures = new []
             {
-                new Teewee { Position =  new Point(4, 0) } as IFigure, 
-                new Hero   { Position =  new Point(4, 0) } as IFigure,
-                new Square { Position =  new Point(4, 0) } as IFigure
+                new Teewee           { Position =  new Point(4, 0) } as IFigure, 
+                new Hero             { Position =  new Point(4, 0) } as IFigure,
+                new Square           { Position =  new Point(4, 0) } as IFigure,
+                new OrangeRicky      { Position =  new Point(4, 0) } as IFigure, 
+                new BlueRicky        { Position =  new Point(4, 0) } as IFigure,
+                new PhodeIslandLeft  { Position =  new Point(4, 0) } as IFigure, 
+                new PhodeIslandRight { Position =  new Point(4, 0) } as IFigure, 
             };
 
             return figures[random.Next(figures.Length)].Clone() as IFigure;
@@ -117,6 +127,10 @@ namespace Tetris
             Console.WriteLine(" Cur. Speed  \t {0}   ", "25");
             Console.SetCursorPosition(7, 7);
             Console.WriteLine(" Burn Lines  \t {0}   ", Lines);
+            Console.SetCursorPosition(7, 15);
+            Console.WriteLine(".Game Design by");
+            Console.SetCursorPosition(7, 16);
+            Console.WriteLine("Alexey Pajitnov");
         }
     }
 }

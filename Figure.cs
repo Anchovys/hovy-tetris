@@ -21,8 +21,5 @@ namespace Tetris
             get;
             set;
         }
-
-        object Clone();
-
     }
 }

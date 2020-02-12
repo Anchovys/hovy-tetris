@@ -171,14 +171,30 @@ namespace Tetris
                 for (int j = 0; j < _lines[i].Length; j++)
                 {
                     if (_lines[i][j] != checkFor)
+                    {
                         fill = false;
+                    }
                 }
 
                 if (fill)
+                {
                     return i;
+                }
 
             }
             return -1;
+        }
+
+        public bool CheckContainsLine(int id, char checkFor = '#')
+        {
+            for (int j = 0; j < _lines[id].Length; j++)
+            {
+                if (_lines[id][j] == checkFor)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void DeleteLine(int id) 

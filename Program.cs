@@ -62,7 +62,7 @@ namespace Tetris
         static void DrawStats()
         {
             Console.SetCursorPosition(7, 5);
-            Console.WriteLine(" HovyTetris  \t {0} ", "0.17");
+            Console.WriteLine(" HovyTetris  \t {0} ", "0.18");
             Console.SetCursorPosition(7, 6);
             Console.WriteLine(" Cur. Speed  \t {0}   ", _speed + 1);
             Console.SetCursorPosition(7, 7);
@@ -115,7 +115,7 @@ namespace Tetris
                               "\n\nControls : " +
                               "\n\t[ P / enter ]\t\t - set/unset pause" +
                               "\n\t[ R ]\t\t\t - restart game" +
-                              "\n\t[ E / up arrow ]\t\t - rotate (clockwise)" +
+                              "\n\t[ E / up arrow ]\t - rotate (clockwise)" +
                               "\n\t[ A / left arrow ]\t - move left" +
                               "\n\t[ D / right arrow ]\t - move right" +
                               "\n\t[ S / down arrow ]\t - move down (falling)" +

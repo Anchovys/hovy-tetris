@@ -28,8 +28,7 @@ namespace Tetris
         }
 
         /// <summary>
-        /// Заполнить игровое поле пустыми символами
-        /// (очистить)
+        /// Заполнить игровое поле пустыми символами (очистить)
         /// </summary>
         public void FillField(char symbol = ' ') 
         {
@@ -42,44 +41,38 @@ namespace Tetris
         /// <summary>
         /// Проверить, что фигура находится в границах игрового поля
         /// </summary>
-        /// <returns>TRUE или FALSE в зависимости от того,
-        /// находится ли фигура в границах игрового поля</returns>
-        public bool CheckLimits(IFigure figure, Point point = null)
+        /// <returns>TRUE или FALSE в зависимости от того, касается ли фигура границ поля</returns>
+        public bool CheckLimits(IFigure figure, Point customPoint = null)
         {
-            Point pos;
-            if (point == null)
-            {   // offset X: 1 > 0
-                pos = new Point(figure.Position.X, figure.Position.Y);
-            }
-            else
-            {   // offset X: 1 > 0
-                pos = new Point(point.X, point.Y);
-            }
+            var pos = customPoint == null ? new Point(figure.Position.X, figure.Position.Y) : new Point(customPoint.X, customPoint.Y);
 
-            return (pos.X >= 0 && pos.Y >= 0) &&
-                pos.X + figure.Data[0].Length <= _sizes.X && pos.Y + figure.Data.Length <= _sizes.Y;
-                
+            return pos.X >= 0 && pos.X + figure.Data[0].Length <= _sizes.X &&
+                   pos.Y >= 0 && pos.Y + figure.Data.Length <= _sizes.Y;
+        }
+        
+        /// <summary>
+        /// Проверить коллизии для фигуры
+        /// </summary>
+        /// <param name="data">Данные фигура</param>
+        /// <param name="point">Позиция фигуры</param>
+        /// <returns>TRUE или FALSE в зависимости от того, касается ли фигура границ поля</returns>
+        public bool CheckLimits(string[] data, Point point)
+        {
+            var pos = new Point(point.X, point.Y);
 
+            return pos.X >= 0 && pos.X + data[0].Length <= _sizes.X &&
+                   pos.Y >= 0 && pos.Y + data.Length <= _sizes.Y;
         }
 
         /// <summary>
         /// Проверить коллизии для фигуры
         /// </summary>
         /// <param name="figure">Конкретная фигура</param>
-        /// <param name="point">Ее позиции (опционально)</param>
-        /// <returns>TRUE или FALSE в зависимости от того, касается ли 
-        /// фигура нижней части поля или других фигур</returns>
-        public bool CheckCollision(IFigure figure, Point point = null)
+        /// <param name="customPoint">Ее позиции (опционально)</param>
+        /// <returns>TRUE или FALSE в зависимости от того, касается фигура других фигур/returns>
+        public bool CheckCollision(IFigure figure, Point customPoint = null)
         {
-            Point pos;
-            if (point == null)
-            {   // offset X: 1 > 0
-                pos = new Point(figure.Position.X, figure.Position.Y);
-            }
-            else
-            {   // offset X: 1 > 0
-                pos = new Point(point.X, point.Y);
-            }
+            var pos = customPoint == null ? new Point(figure.Position.X, figure.Position.Y) : new Point(customPoint.X, customPoint.Y);
 
             for (int y = 0; y < figure.Data.Length; y++)
             {
@@ -98,6 +91,32 @@ namespace Tetris
             }
             return true;
         }
+        
+        /// <summary>
+        /// Проверить коллизии для фигуры
+        /// </summary>
+        /// <param name="data">Данные фигуры</param>
+        /// <param name="customPoint">Ее позиции (опционально)</param>
+        /// <returns>TRUE или FALSE в зависимости от того, касается фигура других фигур/returns>
+        public bool CheckCollision(string[] data, Point point)
+        {
+            for (int y = 0; y < data.Length; y++)
+            {
+                for (int x = 0; x < data[0].Length; x++)
+                {
+                    if (data[y][x] == ' ')
+                    {
+                        continue;
+                    }
+
+                    if (_lines[point.Y + y][point.X + x] != ' ')
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
 
 
         /// <summary>
@@ -108,37 +127,25 @@ namespace Tetris
         /// <param name="figure">Какую фигуру разместить</param>
         /// <returns>TRUE или FALSE в зависимости от того, 
         /// Получилось ли разместить фигуру</returns>
-        public bool PlaceFigure(IFigure figure)
+        public void PlaceFigure(IFigure figure)
         {
-            var pos = new Point(figure.Position.X, figure.Position.Y);
-
-            // проверить все пределы
-            if (pos.X < 0 || pos.Y < 0 || 
-                pos.X + figure.Data[0].Length > _sizes.X || 
-                pos.Y + figure.Data.Length > _sizes.Y)
-            {
-                return false;
-            }
-
             for (int y = 0; y < figure.Data.Length; y++)
             {
-                var tString = _lines[pos.Y + y];
+                var tString = _lines[figure.Position.Y + y];
 
                 // операция очень проста - на игровом 
                 // поле меняем только нужные нам символы
                 for (int x = 0; x < figure.Data[0].Length; x++)
                 {
-                    if (tString[pos.X + x] != '#' && figure.Data[y][x] != ' ')
+                    if (tString[figure.Position.X + x] != '#' && figure.Data[y][x] != ' ')
                     {
-                        tString[pos.X + x] = figure.Data[y][x];
+                        tString[figure.Position.X + x] = figure.Data[y][x];
                     }
                 }
 
                 // записываем новую строку на игровую карту
-                _lines[y + pos.Y] = new string(tString).ToCharArray();
+                _lines[y + figure.Position.Y] = new string(tString).ToCharArray();
             }
-
-            return true;
         }
 
         /// <summary>
@@ -162,7 +169,11 @@ namespace Tetris
                 Console.WriteLine(_lines[y]);
             }
         }
-
+        /// <summary>
+        /// Находит ID полностью заполненной строки игрового поля
+        /// </summary>
+        /// <param name="checkFor">Какой символ проверять</param>
+        /// <returns>ID заполнной строки</returns>
         public int FindFullLine(char checkFor = '#') 
         {
             for (int i = 0; i < _lines.Length; i++)
@@ -185,8 +196,20 @@ namespace Tetris
             return -1;
         }
 
+        /// <summary>
+        /// Проверяет, содержит ли строка определенный символ
+        /// </summary>
+        /// <param name="id">ID строки выбора</param>
+        /// <param name="checkFor">Символ для проверки</param>
+        /// <returns>TRUE/FALSE в зависимости от того, есть ли символ в выбранной строке</returns>
         public bool CheckContainsLine(int id, char checkFor = '#')
         {
+            // проверим, что в пределах
+            if(id < 0 || id > _lines.Length)
+            {
+                return false;
+            }
+            
             for (int j = 0; j < _lines[id].Length; j++)
             {
                 if (_lines[id][j] == checkFor)
@@ -197,8 +220,14 @@ namespace Tetris
             return false;
         }
 
+        /// <summary>
+        /// Удаляет определенную строку с игрового поля, 
+        /// двигая остальное поле (выше указанной строки) вниз
+        /// </summary>
+        /// <param name="id">ID строки, которую нужно удалить</param>
         public void DeleteLine(int id) 
         { 
+            // проверим, что в пределах
             if(id < 0 || id > _lines.Length)
             {
                 return;
@@ -220,9 +249,10 @@ namespace Tetris
             
         }
 
-        public void HandleRotate(IFigure figure)
+        public string[] HandleRotate(IFigure figure)
         {
-            string[] tdata = figure.Data;
+            var data = figure.Data;
+            var tdata = figure.Data;
 
             int rotate = figure.RotateLength;
 
@@ -232,33 +262,31 @@ namespace Tetris
 
                 for (int r = 0; r < rotate; r++)
                 {
-                    tdata = new string[figure.Data[0].Length];
+                    tdata = new string[data[0].Length];
 
-                    for (int i = 0; i < figure.Data[0].Length; i++)
+                    for (int i = 0; i < data[0].Length; i++)
                     {
                         string tstr = string.Empty;
 
-                        for (int j = figure.Data.Length-1; j >= 0; j--)
+                        for (int j = data.Length-1; j >= 0; j--)
                         {
-                            tstr += figure.Data[j][i];
+                            tstr += data[j][i];
                         }
                         tdata[i] = tstr;
                     }
 
-                    figure.Data = new string[tdata.Length];
-                    Array.Copy(tdata, figure.Data, tdata.Length);
-
+                    data = new string[tdata.Length];
+                    Array.Copy(tdata, data, tdata.Length);
                 }
             }
 
-            figure.Data = tdata;
+            return data; 
         }
 
         public void DrawFigure(IFigure figure)
         {
             var pos = new Point(figure.Position.X + _globalOffsetX, figure.Position.Y);
 
-            var cursorPos = new Point(Console.CursorTop, Console.CursorLeft);
             for (int i = 0; i < figure.Data.Length; i++)
             {
                 Console.SetCursorPosition(pos.X, pos.Y + i);
@@ -267,8 +295,6 @@ namespace Tetris
                     Console.Write(figure.Data[i][j]);
                 }
             }
-                
-            Console.SetCursorPosition(cursorPos.X, cursorPos.Y);
         }
     }
 }

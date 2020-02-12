@@ -7,33 +7,48 @@ namespace Tetris
     {
         private static GameField _field = new GameField(Console.BufferWidth);
         private static IFigure _figure = TakeRandom();
-        private static int Lines = 0;
+        private static int Lines;
+        private static int Speed; 
         
         static void Main()
         {
+            Console.CursorVisible = false;
+            
+            // текущий тик
             int currentTick = 0;
-            int maxTick = 20;
-            int controlTick = maxTick / 4;
+            // частота отрисовки карты
+            int renderTick = 10;
+            // частота обработки управления
+            int controlTick = renderTick / 5;
             
             do
             {
-                Thread.Sleep(10);
+                Thread.Sleep(20 - Speed);
                 currentTick++;
 
-                if (currentTick % maxTick == 0)
+                if (currentTick % renderTick == 0)
                 {
-
+                    // попытка сжечь линию
                     int fillId = _field.FindFullLine();
-                    if (fillId != -1)
+                    if (fillId != -1) // есть такая
                     {
-                        _field.DeleteLine(fillId);
-                        Lines++;
+                        _field.DeleteLine(fillId); // сжигаем
+                        Lines++;                   // записываем в очки
+                        
+                        
+                        // тут же изменяем скорость игры
+                        if (Lines % 2 == 0 && Speed < 15)
+                        {
+                            Speed--;
+                        }
+
                     }
 
+                    // проверка на провал
                     if (_field.CheckContainsLine(0, '#'))
                     {
-                        _field.FillField(' ');
-                        Lines = 0;
+                        _field.FillField(' '); // очищаем поле
+                        Lines = 0;                    // сброс очков
                     }
 
                     var _pos = new Point(_figure.Position.X, _figure.Position.Y);
@@ -49,6 +64,9 @@ namespace Tetris
                         _figure = TakeRandom();
                     }
 
+                    // отрисовка статистики и т.д
+                    DrawStats();
+                    
                     currentTick = 0; // сброс таймера
                 }
 
@@ -56,12 +74,21 @@ namespace Tetris
                 {
                     // отрисовка всего экрана
                     _field.DrawScreen();
-      
-                    // отрисовка статистики и т.д
-                    DrawStats();
-                    
-                    _field.HandleRotate(_figure);
-                    
+
+                    // нужно повернуть фигуру
+                    if (_figure.RotateLength > 0)
+                    {
+                        // обрабатываем поворот
+                        var tempR = _field.HandleRotate(_figure);
+                        
+                        // ничему не будет мешать
+                        if (_field.CheckLimits(tempR, _figure.Position) && 
+                            _field.CheckCollision(tempR, _figure.Position)) 
+                        {
+                            _figure.Data = tempR; // применяем поворот
+                        }
+                    }
+
                     // отрисовка падающей фигуры (отдельно)
                     _field.DrawFigure(_figure);
 
@@ -122,9 +149,9 @@ namespace Tetris
         static void DrawStats()
         {
             Console.SetCursorPosition(7, 5);
-            Console.WriteLine(" HovyTetris  \t {0} ", "0.15");
+            Console.WriteLine(" HovyTetris  \t {0} ", "0.16");
             Console.SetCursorPosition(7, 6);
-            Console.WriteLine(" Cur. Speed  \t {0}   ", "25");
+            Console.WriteLine(" Cur. Speed  \t {0}   ", Speed + 1);
             Console.SetCursorPosition(7, 7);
             Console.WriteLine(" Burn Lines  \t {0}   ", Lines);
             Console.SetCursorPosition(7, 15);

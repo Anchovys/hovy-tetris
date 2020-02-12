@@ -171,28 +171,22 @@ namespace Tetris
 
         static void DrawNext()
         {
+            (int x, int y) sizeFigure = (_nextFigure.Data[0].Length, _nextFigure.Data.Length);
+            (int x, int y) sizeBar = (12, 6);
+            (int x, int y) offset = (sizeBar.x / 2 - sizeFigure.x / 2, 
+                                     sizeBar.y / 2 - sizeFigure.y / 2);
 
-            
-            int offsetX = 6;
-            int offsetY = 3;
-            
-            for (int y = 0; y < 6; y++)
+            for (int y = 0; y < sizeBar.y; y++)
             {
                 Console.SetCursorPosition(_field.GlobalOffsetX + _field.Sizes.X + 2, 5 + y);
-                for (int x = 0; x < 12; x++)
+                
+                for (int x = 0; x < sizeBar.x; x++)
                 {
-                    int xpos = x - offsetX;
-                    int ypos = y - offsetY;
+                    int xpos = x - offset.x;
+                    int ypos = y - offset.y;
                     
-                    if (xpos < _nextFigure.Data[0].Length && xpos >= 0 && 
-                        ypos < _nextFigure.Data.Length && ypos >= 0)
-                    {
-                        Console.Write(_nextFigure.Data[ypos][xpos]);
-                    }
-                    else
-                    {
-                        Console.Write(' ');
-                    }
+                    Console.Write((xpos >= 0 && xpos < sizeFigure.x && 
+                                  ypos >= 0 && ypos < sizeFigure.y) ? _nextFigure.Data[ypos][xpos] : ' ');
                 }
             }
         }

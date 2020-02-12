@@ -20,7 +20,8 @@ namespace Tetris
             
             for (int i = 0; i < Sizes.Y + 2; i++)
             {
-                Console.WriteLine(new string('.', bufferWidth));
+                Console.SetCursorPosition(0,i);
+                Console.Write(new string(' ', bufferWidth));
             }
 
             GlobalOffsetX = bufferWidth / 2 - (Sizes.X / 2);
@@ -159,7 +160,7 @@ namespace Tetris
                 for (int y = 0; y < Sizes.Y; y++)
                 {
                     Console.SetCursorPosition(GlobalOffsetX, y);
-                    Console.WriteLine(new string('+', Sizes.X));
+                    Console.WriteLine(new string('.', Sizes.X));
                 }
             }
             
@@ -168,6 +169,7 @@ namespace Tetris
                 Console.SetCursorPosition(GlobalOffsetX, y);
                 Console.WriteLine(_lines[y]);
             }
+            Console.SetCursorPosition(0,0);
         }
         /// <summary>
         /// Находит ID полностью заполненной строки игрового поля
@@ -249,18 +251,25 @@ namespace Tetris
             
         }
 
-        public string[] HandleRotate(IFigure figure)
+        /// <summary>
+        /// Применить поворот для данных фигуры
+        /// </summary>
+        /// <param name="figure">Обьект фигуры</param>
+        /// <param name="customRotate">Специальный поворот (дополнительно)</param>
+        /// <returns>Вернет измененные данные для фигуры</returns>
+        public string[] HandleRotate(IFigure figure, int customRotate = 0)
         {
             var data = figure.Data;
             var tdata = figure.Data;
 
-            int rotate = figure.RotateLength;
+            int rotate = customRotate != 0 ? customRotate : figure.RotateLength;
 
             if (rotate > 0)
             {
+                // сбросим количество нужных поворотов
                 figure.RotateLength = 0;
 
-                for (int r = 0; r < rotate; r++)
+                for (int r = 0; r < rotate; r++) // на каждый новый поворот
                 {
                     tdata = new string[data[0].Length];
 
@@ -283,6 +292,10 @@ namespace Tetris
             return data; 
         }
 
+        /// <summary>
+        /// Отрисовать фигуру на консоли
+        /// </summary>
+        /// <param name="figure">Обьект фигуры</param>
         public void DrawFigure(IFigure figure)
         {
             var pos = new Point(figure.Position.X + GlobalOffsetX, figure.Position.Y);

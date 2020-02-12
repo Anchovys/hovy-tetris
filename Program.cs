@@ -1,46 +1,46 @@
-using System;
+﻿using System;
+using System.Threading;
 
-namespace TetrisBool
+namespace Tetris
 {
     public class Program
     {
-        static GameField _field = new GameField();
-        private static IFigure _figure = new Square(new Point(4, 0));
+        private static GameField _field = new GameField(Console.BufferWidth);
+        private static IFigure _figure = TakeRandom();
+        private static int Lines = 0;
         
         static void Main()
         {
-            _field.FillField(false);
-            
             int currentTick = 0;
-            int maxTick = 10;
-            int controlTick = 5;
+            int maxTick = 20;
+            int controlTick = maxTick / 4;
             
             do
             {
-                System.Threading.Thread.Sleep(10);
+                Thread.Sleep(10);
                 currentTick++;
 
                 if (currentTick % maxTick == 0)
                 {
-                    Console.WriteLine("Fine");
 
                     int fillId = _field.FindFullLine();
                     if (fillId != -1)
                     {
                         _field.DeleteLine(fillId);
+                        Lines++;
                     }
 
                     var _pos = new Point(_figure.Position.X, _figure.Position.Y);
-                    _pos.Y++; // смещение фигуры влево
+                    _pos.Y++; // смещение фигуры вниз
                         
                     if (_field.CheckLimits(_figure, _pos) && _field.CheckCollision(_figure, _pos))
                     {
-                        _figure.Position = _pos;
+                        _figure.Position = _pos; // смещаем фигуру вниз
                     }
                     else
                     {
                         _field.PlaceFigure(_figure);
-                        _figure = new Square(new Point(4, 0));
+                        _figure = TakeRandom();
                     }
 
                     currentTick = 0; // сброс таймера
@@ -50,9 +50,12 @@ namespace TetrisBool
                 {
                     // отрисовка всего экрана
                     _field.DrawScreen();
-
-                    Console.WriteLine("1234567890");
-
+      
+                    // отрисовка статистики и т.д
+                    DrawStats();
+                    
+                    _field.HandleRotate(_figure);
+                    
                     // отрисовка падающей фигуры (отдельно)
                     _field.DrawFigure(_figure);
 
@@ -79,14 +82,41 @@ namespace TetrisBool
                     {
                         var _pos = new Point(_figure.Position.X, _figure.Position.Y);
                         _pos.X++; // смещение фигуры вправо
-                        
+
                         if (_field.CheckLimits(_figure, _pos) && _field.CheckCollision(_figure, _pos))
                         {
-                            _figure.Position = _pos;  // применяем новую позицию
+                            _figure.Position = _pos; // применяем новую позицию
                         }
+                    }
+                    else if (key == ConsoleKey.R)
+                    {
+                        _figure.RotateLength++;
                     }
                 }
             } while (true);
+        }
+        
+        static IFigure TakeRandom()
+        {
+            var random = new Random();
+            var figures = new []
+            {
+                new Teewee { Position =  new Point(4, 0) } as IFigure, 
+                new Hero   { Position =  new Point(4, 0) } as IFigure,
+                new Square { Position =  new Point(4, 0) } as IFigure
+            };
+
+            return figures[random.Next(figures.Length)].Clone() as IFigure;
+        }
+
+        static void DrawStats()
+        {
+            Console.SetCursorPosition(7, 5);
+            Console.WriteLine(" HovyTetris  \t {0} ", "0.15");
+            Console.SetCursorPosition(7, 6);
+            Console.WriteLine(" Cur. Speed  \t {0}   ", "25");
+            Console.SetCursorPosition(7, 7);
+            Console.WriteLine(" Burn Lines  \t {0}   ", Lines);
         }
     }
 }
